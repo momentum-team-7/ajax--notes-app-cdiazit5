@@ -3,11 +3,10 @@ const notesForm = document.querySelector('#notes-field')
 const notesList = document.querySelector('#notes-list')
 
 notesForm.addEventListener('sumbit', function (event) {
-    event.preventDefault()
     const noteInput = document.querySelector('#note-input').value
     const noteTitle = document.querySelector('#note-title').value
-    createNote(notesInput, noteTitle)
-})
+    createNote(noteInput, noteTitle)
+    })
 
 notesList.addEventListener('click', function (event) {
     if (event.target.classList.contains('delete')) {
@@ -22,7 +21,7 @@ notesList.addEventListener('click', function (event) {
     if (event.target.classList.contains('update-note')) {
         updateNote(event.target)
     }
-}
+})
 
 
 function renderNoteItem(noteObj) {
@@ -49,17 +48,27 @@ function showEditInput (noteItem) {
     noteItem.querySelector('input').select()
 }
 
+function hideEditControls (noteItem) {
+    fetch(`http://localhost:3000/notes/${noteItem.id}`)
+        .then(res => res.json())
+        .then(data => {
+            console.log(data)
+            renderNoteItem(noteItem, data)
+        })
+}
+
 
 function listNotes () {
     fetch(url)
-        .then (Response => Response.json())
-        .then(function (data => {
-            console.log(data)
-            for (let note of data) {
-                console.log(note)
-                renderNoteItem(note)
-            }
-        })
+    .then (Response => Response.json())
+    .then (data => {
+        console.log(data)
+        for (let note of data) {
+            console.log(note)
+            renderNoteItem(note)
+        }
+    })
+}
 
 function createNote (noteTitle, noteInput) {
     fetch(url, {
@@ -91,7 +100,24 @@ function renderTodoText (todoListItem, noteObj) {
     todoListItem.innerHTML = `${noteObj.item}`
     }
 
-
+function updateNote (element) {
+    const noteId = element.parentElement.id
+    const noteInput = document.querySelector('.edit-text')
+    fetch (`'http://localhost:3000/notes/${noteId}`, {
+        method: 'PATCH',
+        headers: { 'content-Type': 'application/json' },
+        body: JSON.stringify({
+            body: noteInput.value,
+        })
+    })
+        .then (function (res) {
+            return res.json()
+        })
+        .then (function (data) {
+            console.log(data)
+            renderNoteText(element.parentElement, data)
+        })
+    }      
 
 
 

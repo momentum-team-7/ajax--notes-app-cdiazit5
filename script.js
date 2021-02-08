@@ -1,8 +1,10 @@
 const url = 'http://localhost:3000/notes'
-const notesForm = document.querySelector('#notes-field')
+const notesForm = document.querySelector('#notes-form')
 const notesList = document.querySelector('#notes-list')
 
-notesForm.addEventListener('sumbit', function (event) {
+// event listeners 
+
+notesForm.addEventListener('submit', function (event) {
     const noteInput = document.querySelector('#note-input').value
     const noteTitle = document.querySelector('#note-title').value
     createNote(noteInput, noteTitle)
@@ -23,16 +25,32 @@ notesList.addEventListener('click', function (event) {
     }
 })
 
+// creating a note functions 
+function createNote (noteTitle, noteInput) {
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            title: noteTitle,
+            body: noteInput,
+        })
+    })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data)
+            renderNoteItem(data)
+        })
+}
 
 function renderNoteItem(noteObj) {
     const noteEl = document.createElement('li')
     noteEl.id = noteObj.id
-    renderNoteItem(noteEl, noteObj)
+    renderNoteInput(noteEl, noteObj)
     notesList.appendChild(noteEl)
 }
 
 function renderNoteInput (noteEl, noteObj) {
-    noteEl.innerHTML = `<p> ${noteObj.body}</p>`;
+    noteEl.innerHTML = `<p> ${noteObj.body} </p>`
 }
 
 function editNote (element) {
@@ -70,35 +88,20 @@ function listNotes () {
     })
 }
 
-function createNote (noteTitle, noteInput) {
-    fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            title: noteTitle,
-            body: noteInput,
-        })
-    })
-        .then(res => res.json())
-        .then(data => {
-            console.log(data)
-            renderNoteItem(data)
-        })
-}
 
 
-function renderNoteItem (noteObj) {
-    const noteEl = document.createElement('li')
-    item.id = noteObj.id
-    noteEl.classList.add()
-    renderNoteItem(noteEl, noteObj)
-    notesList.appendChild(noteEl)
+// function renderNoteItem (noteObj) {
+//     const noteEl = document.createElement('li')
+//     item.id = noteObj.id
+//     noteEl.classList.add()
+//     renderNoteItem(noteEl, noteObj)
+//     notesList.appendChild(noteEl)
 
-}
+// }
     
-function renderTodoText (todoListItem, noteObj) {
-    todoListItem.innerHTML = `${noteObj.item}`
-    }
+// function renderTodoText (todoListItem, noteObj) {
+//     todoListItem.innerHTML = `${noteObj.item}`
+//     }
 
 function updateNote (element) {
     const noteId = element.parentElement.id
@@ -118,19 +121,6 @@ function updateNote (element) {
             renderNoteText(element.parentElement, data)
         })
     }      
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
